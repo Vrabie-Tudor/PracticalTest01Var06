@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PracticalTest01Var06">
         <activity
+            android:name=".PracticalTest01Var06SecondaryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PracticalTest01Var06" />
+
+        <activity
             android:name=".PracticalTest01Var06MainActivity"
             android:exported="true"
             android:label="@string/app_name"

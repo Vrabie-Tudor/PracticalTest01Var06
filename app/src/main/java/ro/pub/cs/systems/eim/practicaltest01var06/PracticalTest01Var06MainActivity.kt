@@ -50,6 +50,18 @@ class PracticalTest01Var06MainActivity : ComponentActivity() {
             val text3 = number3EditText.text.toString()
 
             Toast.makeText(this, "$text1, $text2, $text3", Toast.LENGTH_SHORT).show()
+            
+            var checkedCount = 0
+            if (number1CheckBox.isChecked) checkedCount++
+            if (number2CheckBox.isChecked) checkedCount++
+            if (number3CheckBox.isChecked) checkedCount++
+
+            val intent = android.content.Intent(this, PracticalTest01Var06SecondaryActivity::class.java)
+            intent.putExtra("text1", text1)
+            intent.putExtra("text2", text2)
+            intent.putExtra("text3", text3)
+            intent.putExtra("checks", checkedCount)
+            startActivity(intent)
         }
     }
 
