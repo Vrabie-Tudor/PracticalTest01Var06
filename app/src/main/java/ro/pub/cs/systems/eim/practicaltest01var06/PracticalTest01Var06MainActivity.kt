@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import kotlin.random.Random
 
 class PracticalTest01Var06MainActivity : ComponentActivity() {
 
@@ -31,6 +33,29 @@ class PracticalTest01Var06MainActivity : ComponentActivity() {
         number3CheckBox = findViewById(R.id.check_box_3)
         
         playButton = findViewById(R.id.button_play)
+
+        playButton.setOnClickListener {
+            if (!number1CheckBox.isChecked) {
+                number1EditText.setText(generateRandomValue())
+            }
+            if (!number2CheckBox.isChecked) {
+                number2EditText.setText(generateRandomValue())
+            }
+            if (!number3CheckBox.isChecked) {
+                number3EditText.setText(generateRandomValue())
+            }
+
+            val text1 = number1EditText.text.toString()
+            val text2 = number2EditText.text.toString()
+            val text3 = number3EditText.text.toString()
+
+            Toast.makeText(this, "$text1, $text2, $text3", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun generateRandomValue(): String {
+        val options = listOf("1", "2", "3", "*")
+        return options[Random.nextInt(options.size)]
     }
 }
 
