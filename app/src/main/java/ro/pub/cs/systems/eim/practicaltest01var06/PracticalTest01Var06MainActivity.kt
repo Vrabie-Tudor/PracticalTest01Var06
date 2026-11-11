@@ -1,11 +1,13 @@
 package ro.pub.cs.systems.eim.practicaltest01var06
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import kotlin.random.Random
 
 class PracticalTest01Var06MainActivity : ComponentActivity() {
@@ -19,10 +21,28 @@ class PracticalTest01Var06MainActivity : ComponentActivity() {
     private lateinit var number3CheckBox: CheckBox
     
     private lateinit var playButton: Button
+    
+    private var totalScore = 0
+    private var lastText1 = ""
+    private var lastText2 = ""
+    private var lastText3 = ""
+    
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val score = result.data?.getIntExtra("score", 0) ?: 0
+            totalScore += score
+            Toast.makeText(this, "Score received: $score | Total Score: $totalScore", Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_practical_test01_var06_main)
+
+        if (savedInstanceState != null) {
+            totalScore = savedInstanceState.getInt("totalScore", 0)
+            Toast.makeText(this, "Restored total score: $totalScore", Toast.LENGTH_LONG).show()
+        }
 
         number1EditText = findViewById(R.id.edit_text_1)
         number2EditText = findViewById(R.id.edit_text_2)
@@ -35,13 +55,17 @@ class PracticalTest01Var06MainActivity : ComponentActivity() {
         playButton = findViewById(R.id.button_play)
 
         playButton.setOnClickListener {
-            if (!number1CheckBox.isChecked) {
+            val isNumber1Held = number1CheckBox.isChecked
+            val isNumber2Held = number2CheckBox.isChecked
+            val isNumber3Held = number3CheckBox.isChecked
+
+            if (!isNumber1Held) {
                 number1EditText.setText(generateRandomValue())
             }
-            if (!number2CheckBox.isChecked) {
+            if (!isNumber2Held) {
                 number2EditText.setText(generateRandomValue())
             }
-            if (!number3CheckBox.isChecked) {
+            if (!isNumber3Held) {
                 number3EditText.setText(generateRandomValue())
             }
 
@@ -49,25 +73,39 @@ class PracticalTest01Var06MainActivity : ComponentActivity() {
             val text2 = number2EditText.text.toString()
             val text3 = number3EditText.text.toString()
 
+            if (text1 == lastText1 && text2 == lastText2 && text3 == lastText3) {
+                Toast.makeText(this, "Score didn't change. Total Score: $totalScore", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            lastText1 = text1
+            lastText2 = text2
+            lastText3 = text3
+
             Toast.makeText(this, "$text1, $text2, $text3", Toast.LENGTH_SHORT).show()
             
             var checkedCount = 0
-            if (number1CheckBox.isChecked) checkedCount++
-            if (number2CheckBox.isChecked) checkedCount++
-            if (number3CheckBox.isChecked) checkedCount++
+            if (isNumber1Held) checkedCount++
+            if (isNumber2Held) checkedCount++
+            if (isNumber3Held) checkedCount++
 
-            val intent = android.content.Intent(this, PracticalTest01Var06SecondaryActivity::class.java)
+            val intent = Intent(this, PracticalTest01Var06SecondaryActivity::class.java)
             intent.putExtra("text1", text1)
             intent.putExtra("text2", text2)
             intent.putExtra("text3", text3)
             intent.putExtra("checks", checkedCount)
-            startActivity(intent)
+            activityResultLauncher.launch(intent)
         }
     }
 
     private fun generateRandomValue(): String {
         val options = listOf("1", "2", "3", "*")
         return options[Random.nextInt(options.size)]
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("totalScore", totalScore)
     }
 }
 

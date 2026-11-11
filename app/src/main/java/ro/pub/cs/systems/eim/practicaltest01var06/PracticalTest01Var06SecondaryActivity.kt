@@ -31,8 +31,13 @@ class PracticalTest01Var06SecondaryActivity : ComponentActivity() {
                 else -> 0
             }
             resultTextView.text = "Gained $score"
+
+            val intentToReturn = android.content.Intent()
+            intentToReturn.putExtra("score", score)
+            setResult(android.app.Activity.RESULT_OK, intentToReturn)
         } else {
             resultTextView.text = ""
+            setResult(android.app.Activity.RESULT_CANCELED)
         }
 
         okButton.setOnClickListener {
